@@ -4,7 +4,7 @@
 
 This project implements the **Retrieval (R)** component of a Retrieval-Augmented Generation (RAG) pipeline. The system ingests a small text dataset, converts it into vector embeddings, stores them in a **Chroma** vector database, and retrieves the most relevant context chunks based on a user query.
 
-**Objective:** Demonstrate a fully functional retrieval pipeline (Ingestion and Retrieval) with a minimal user interface. **(The LLM generation step is deliberately omitted as per the assignment instructions.)**
+**Note:** The LLM generation step is intentionally omitted as required by the assignment. 
 
 ---
 
@@ -13,23 +13,33 @@ This project implements the **Retrieval (R)** component of a Retrieval-Augmented
 ### A. Dataset Selection
 
 | Parameter | Choice | Justification |
-| :--- | :--- | :--- |
-| **Source** | "Why Hiring an Accountant Saves Time and Money" (Kaggle) | The data is entirely **text-based** and **very small** (~8,200 characters), easily meeting the <30,000 character requirement and ensuring costs remain far below $1 USD. |
-| **Expected Queries** | Quantitative data (e.g., "How much money can I save?"), Lists (e.g., "Recommended software?"), and Contextual comparisons (e.g., "Local vs. remote accountant?"). | The diverse, information-rich content allows for robust testing of semantic retrieval capabilities. |
+|-----------|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| **Source** | ["Why Hiring an Accountant Saves Time and Money" – Kaggle](https://www.kaggle.com/datasets/deancooperacca/why-hiring-an-accountant-saves-time-and-money) | Small, clean, text-based dataset (~8,200 characters), well under the 30,000-character requirement. |
+| **Expected Queries** | Examples: “How much money can I save?”, “What accreditations should I look for?”, “Why hire an accountant?” | The article contains rich semantically meaningful text suitable for robust testing of retrieval capabilities. |
 
 ### B. Vector Database Selection: ChromaDB
 
-* **Choice:** ChromaDB (Local Persisted) 
-* **Justification:** Chroma was selected for its **ease of local setup** (In-memory/Disk-based persistence). This eliminated the need for cloud credentials (Pinecone/Weaviate) and complex networking, allowing for rapid development and meeting the requirement for a cost-free solution suitable for a small prototype.
+**Choice:** Chroma (local persistent mode)
 
-### C. Embeddings and RAG Parameters
+**Justification:**
+* No cloud credentials required (unlike Pinecone / Weaviate).
+* Ideal for small prototype RAG systems, providing simplicity and rapid development.
+* Persisted locally under `chroma_db/` allowing reuse after ingestion.
+
+### C. Embeddings and RAG Parameters (Based on `src/config.py`)
 
 | Parameter | Choice | Justification |
-| :--- | :--- | :--- |
-| **Embeddings Model** | OpenAI `text-embedding-3-small` | Adheres to the requirement to use an OpenAI model while providing state-of-the-art embedding quality at a negligible cost. |
-| **Chunking Strategy** | Size: 500 chars, Overlap: 50 chars | This provides a balanced approach: the chunk size is large enough to maintain semantic **context** (e.g., a full paragraph) but small enough to maintain **relevance** to specific queries. The overlap prevents important sentences from being cut across boundaries. |
-| **Retrieval Output Logic** | **1 Consolidated Chunk** (Merging Top K results) | The dataset is short, resulting in high similarity scores and redundant output when returning K individual chunks. The logic was modified to **consolidate** the Top K results into one comprehensive context chunk to provide a more readable and relevant single output. |
-| **Similarity Filter** | **MAX\_DISTANCE = 1.25** (Approximate Cosine Distance) | Instead of a fixed similarity threshold, we filter results based on a **Maximum Distance**. This ensures that even with slight variations in the distance metric returned by Chroma, only chunks highly related to the query (distance below 1.25, confirmed through debugging) are merged into the final output. |
+|-----------|--------------------------|----------------------------------------------------------------------------------------------------------------------|
+| **Embeddings Model** | `text-embedding-3-small` | Adheres to the assignment requirement; offers state-of-the-art quality at a negligible cost ($<\$1$). |
+| **Chunk Size / Overlap** | **500 chars** / **50 chars** | Large enough to preserve context (e.g., a full paragraph) but small enough for targeted retrieval. Overlap prevents context loss between chunk boundaries. |
+| **Top-K** | **3** | Returns the closest 3 chunks per query, ensuring sufficient context without adding too much noise. |
+| **Distance Filter** | **MAX\_DISTANCE = 1.35** | Acts as a **quality gate**. Only chunks where the distance is $\le 1.35$ are considered relevant and returned to the user, regardless of the `Top-K` value. |
+
+#### Important: Distance vs Similarity
+Chroma's `similarity_search_with_score()` returns **distance** (L2 / Euclidean), where:
+* $0$ = perfect semantic match.
+* Lower distance = more similar.
+* The system filters using: `distance <= MAX_DISTANCE`. This satisfies the “similarity threshold” requirement.
 
 ---
 

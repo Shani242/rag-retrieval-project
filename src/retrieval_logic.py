@@ -1,5 +1,4 @@
 import os
-from typing import List, Tuple
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 
@@ -89,7 +88,7 @@ def retrieve_context(query_text: str) -> RetrievalOutput:
                 final_chunks.append(
                     RetrievedChunk(
                         id=doc.metadata.get("id", "N/A"),
-                        score=round(distance, 4),
+                        distance=round(distance, 4),
                         text=doc.page_content,
                     )
                 )
@@ -103,7 +102,7 @@ def retrieve_context(query_text: str) -> RetrievalOutput:
         return RetrievalOutput(
             results=[RetrievedChunk(
                 id="ERROR",
-                score=0.0,
+                distance=0.0,
                 text=f"Retrieval error: {e}"
             )],
             num_results=0

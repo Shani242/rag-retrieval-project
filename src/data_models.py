@@ -13,7 +13,7 @@ class RetrievedChunk(BaseModel):
     Model representing a single text chunk retrieved from the Vector Database.
     """
     id: str             # The unique ID or index of the chunk
-    score: float        # The Similarity Score (0 to 1)
+    distance: float  # Distance score (lower = better)
     text: str           # The content of the text chunk
 
 class RetrievalOutput(BaseModel):
