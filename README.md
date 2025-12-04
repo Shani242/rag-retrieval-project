@@ -35,13 +35,12 @@ This project implements the **Retrieval (R)** component of a Retrieval-Augmented
 
 ## 💻 3. Technical Implementation and Usage
 
-### A. System Architecture
+The system runs on a **Single-Server Architecture**, leveraging FastAPI's capabilities for both serving the API and the static user interface:
 
-The system runs on a two-server architecture for development simplicity:
-
-* **Backend (API):** FastAPI (Python) on **Port 9000**. Handles retrieval logic and filtering.
-* **Frontend (UI):** Simple Python `http.server` on **Port 8001**. Serves the static HTML/JS interface.
-
+* **Backend (API & UI Server):** FastAPI (Python) on **Port 9000** (or the default 8000 if not specified).
+    * **Function:** Handles the core retrieval logic (`/api/retrieve`).
+    * **Function:** Serves the static `index.html` file (`/`) and other assets (`/static`).
+* **Frontend (UI):** The client-side `index.html` (HTML) makes a **relative fetch request** to the same host's `/api/retrieve` endpoint.
 ### B. Setup and Installation
 
 1.  **Clone the Repository:**
@@ -68,7 +67,7 @@ The system runs on a two-server architecture for development simplicity:
 
 ### C. Running the System
 
-1.  **Start API Server (Backend):** (Terminal 1)
+1.  **Start the Single FastAPI Server:** (Terminal 1)
 
     ```bash
     uvicorn src.main:app --reload --port 9000 --env-file .env
@@ -76,15 +75,8 @@ The system runs on a two-server architecture for development simplicity:
 
     *(The `--env-file .env` ensures the API key is loaded correctly.)*
 
-2.  **Start Frontend Server:** (Terminal 2 - must be run from the `static` folder)
-
-    ```bash
-    cd static
-    python -m http.server 8001
-    ```
-
-3.  **Access UI:**
-    Open your browser to: **`http://127.0.0.1:8001/`**
+2.  **Access UI:**
+    Open your browser to: **`http://127.0.0.1:9000/`** ```
 
 ### D. Testing Example
 
