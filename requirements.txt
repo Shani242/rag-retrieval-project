@@ -1,0 +1,24 @@
+# Backend Framework
+fastapi
+uvicorn
+
+# OpenAI API (embeddings)
+openai
+
+# LangChain (מודול חדש מחולק לתת-חבילות)
+langchain
+langchain-core
+langchain-community
+langchain-openai
+
+# Vector Database
+chromadb
+
+# Environment variables
+python-dotenv
+
+# Data validation (FastAPI משתמש ב-pydantic)
+pydantic
+
+# Token handling for embeddings (לא חובה אבל מומלץ)
+tiktoken
