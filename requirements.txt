@@ -5,7 +5,7 @@ uvicorn
 # OpenAI API (embeddings)
 openai
 
-# LangChain (מודול חדש מחולק לתת-חבילות)
+# LangChain
 langchain
 langchain-core
 langchain-community
@@ -17,8 +17,8 @@ chromadb
 # Environment variables
 python-dotenv
 
-# Data validation (FastAPI משתמש ב-pydantic)
+# Data validation
 pydantic
 
-# Token handling for embeddings (לא חובה אבל מומלץ)
+# Token handling for embeddings
 tiktoken
